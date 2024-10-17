@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "title": "cours react",
+    "content": "cours prévu jeudi",
+    "category": "Formation"
+  },
+  {
+    "id": 2,
+    "title": "Réunion avec le directeur",
+    "content": "Ordre du jour: le **développement** d'une nouvelle application",
+    "category": "Travail"
+  }
+]

@@ -1,101 +1,64 @@
-import Image from "next/image";
+'use client';
+import React from 'react';
+import { useRouter } from 'next/navigation'; // Utilisé pour rediriger
+import NoteForm from '@/components/note/NoteForm';
+import NoteList from '@/components/note/NoteList';
+import useNotes from '@/hooks/useNotes';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const { notes, addNote, categories, addCategory } = useNotes(); // Assure-toi de récupérer addCategory
+  const router = useRouter(); // Utilisation de useRouter pour rediriger
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+  const handleNoteSubmit = (data: any) => {
+    addNote(data);
+  };
+
+  // Gestion de la redirection lorsque l'utilisateur sélectionne une catégorie
+  const handleCategorySelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const category = event.target.value;
+    if (category) {
+      router.push(`/categories?category=${category}`); // Redirige vers la page des catégories avec le paramètre de catégorie
+    }
+  };
+
+  return (
+    <main  className="bg-[url('/image/wave.jpg')] bg-cover bg-center full-screen">
+    <div className="container mx-auto px-4 py-8">
+      {/* Formulaire pour ajouter une nouvelle note */}
+      <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">My Notes App</h2>
+        <NoteForm
+          onSubmit={handleNoteSubmit}
+          categories={categories} // Passe la liste des catégories disponibles
+          addCategory={addCategory} // Utilise la fonction addCategory correctement définie
+        />
+      </div>
+
+      {/* Filtrer les notes par catégorie */}
+      <h2 className="text-xl font-semibold text-white mb-4">Filtrer par catégorie</h2>
+      <div className="w-1/6"> {/* Définit la largeur du conteneur du champ */}
+        <select
+          onChange={handleCategorySelect} // Redirige l'utilisateur vers la page des catégories
+          className="block w-full px-3 py-2 border text-gray-700 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <option value="">Toutes les catégories</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Liste des notes */}
+      <div className='mt-3'>
+        {notes.length > 0 ? (
+          <NoteList notes={notes} />
+        ) : (
+          <p className="text-gray-500">Vous n'avez pas encore de notes. Commencez par en ajouter une !</p>
+        )}
+      </div>
     </div>
+    </main>
   );
 }
