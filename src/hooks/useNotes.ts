@@ -84,12 +84,35 @@ export default function useNotes() {
         },
         body: JSON.stringify(updatedNote),
       });
-      const updatedNoteData = await res.json();
-      setNotes(notes.map((note) => (note.id === id ? updatedNoteData : note)));
+  
+      if (res.ok) {
+        setNotes((prevNotes) =>
+          prevNotes.map((note) => (note.id === id ? { ...note, ...updatedNote } : note))
+        );
+      }
     } catch (error) {
-      console.error('Erreur lors de la mise à jour de la note', error);
+      console.error("Erreur lors de la mise à jour de la note", error);
     }
   };
+    
+  // supprimer une note via l'API
+
+  const deleteNote = async (id: number) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/notes/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) {
+        setNotes(notes.filter((note) => note.id !== id));
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression de la note', error);
+    }
+  }
 
   // Filtrer les notes par catégorie
   const filterByCategory = (category: string) => {
@@ -116,5 +139,6 @@ export default function useNotes() {
     getNoteById,
     updateNote,
     filterByCategory,
+    deleteNote,
   };
 }

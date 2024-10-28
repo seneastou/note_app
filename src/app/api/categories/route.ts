@@ -59,5 +59,56 @@ export async function GET() {
   }
 }
 
+// Route pour mettre à jour une catégorie (PUT)
+
+export async function PUT(req: Request) {
+  try {
+    const { id, category } = await req.json();
+    if (!id || !category) {
+      return NextResponse.json({ message: 'L\'identifiant et la catégorie sont requis' }, { status: 400 });
+    }
+
+    const categories = await readCategoriesFromFile();
+    const index = categories.findIndex((cat: string) => cat === id);
+
+    if (index === -1) {
+      return NextResponse.json({ message: 'Catégorie introuvable' }, { status: 404 });
+    }
+
+    categories[index] = category;
+    await writeCategoriesToFile(categories);
+
+    return NextResponse.json({ category });
+  } catch (error) {
+    return NextResponse.json({ message: 'Erreur lors de la mise à jour de la catégorie' }, { status: 500 });
+  }
+}
+
+// Route pour supprimer une catégorie (DELETE)
+
+export async function DELETE(req: Request) {
+  try {
+    const { id } = await req.json();
+    if (!id) {
+      return NextResponse.json({ message: 'L\'identifiant est requis' }, { status: 400 });
+    }
+
+    const categories = await readCategoriesFromFile();
+    const index = categories.findIndex((cat: string) => cat === id);
+
+    if (index === -1) {
+      return NextResponse.json({ message: 'Catégorie introuvable' }, { status: 404 });
+    }
+
+    categories.splice(index, 1);
+    await writeCategoriesToFile(categories);
+
+    return NextResponse.json({ message: 'Catégorie supprimée' });
+  } catch (error) {
+    return NextResponse.json({ message: 'Erreur lors de la suppression de la catégorie' }, { status: 500 });
+  }
+}
+
+
 
 

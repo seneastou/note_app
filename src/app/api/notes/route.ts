@@ -59,3 +59,4 @@ export async function GET() {
     return NextResponse.json({ message: 'Erreur lors de la récupération des notes' }, { status: 500 });
   }
 }
+
